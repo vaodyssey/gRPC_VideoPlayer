@@ -17,7 +17,7 @@ type videoStreamServiceServer struct {
 }
 
 func (s *videoStreamServiceServer) GetVideoBuffer(ctx context.Context, request *pb.Request) (*pb.Response, error) {
-	inputPath := "../demo_videos/y2mate.com - Best of Dolby Vision 12K HDR 120fps_1080pFHR.mp4"
+	inputPath := "../demo_videos/demo.mp4"
 	outputPath := "../demo_videos/output.mp4"
 	RemoveExistingOutput(outputPath)
 	startTime := utils.SecondsToTimeString(int(request.StartTimeSeconds), "15:04:05")
@@ -26,8 +26,6 @@ func (s *videoStreamServiceServer) GetVideoBuffer(ctx context.Context, request *
 		"-i", inputPath,
 		"-ss", startTime,
 		"-to", endTime,
-		// "-c:v", "copy",
-		// "-c:a", "copy",
 		outputPath,
 	)
 	cmd.Stderr = os.Stderr
