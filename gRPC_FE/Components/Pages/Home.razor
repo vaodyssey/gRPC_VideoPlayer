@@ -1,0 +1,55 @@
+﻿@page "/"
+@using gRPC_FE.Client
+@using gRPC_FE.Constants
+@rendermode @(new InteractiveServerRenderMode(prerender:false))
+<PageTitle>Home</PageTitle>
+@if (IsLoaded==true)
+{
+    <div id="trailer" class="section d-flex justify-content-center embed-responsive embed-responsive-16by9">
+        <video class="embed-responsive-item" controls autoplay>
+            <source src="TempVideo/temp.mp4"
+                    type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    
+}
+else
+{
+    <p>Loading...</p>
+}
+
+
+
+
+
+@code {
+    private VideoClient _videoClient = new VideoClient();
+    private byte[] _buffer;
+    private string _outputPath = "";
+    private string _videoUrl = "";
+    private bool IsLoaded { get; set; } = false;
+    private string _mediaType => "video/mp4";
+    protected override async void OnInitialized()
+    {
+        await Buffer();
+        await ConvertByteArrayToMP4();
+        await InvokeAsync(() =>
+        {
+            IsLoaded = true;
+            StateHasChanged();
+        });
+    }
+    private async Task Buffer()
+    {
+        _buffer = await _videoClient.GetVideoBuffer();
+    }
+    private Task ConvertByteArrayToMP4()
+    {
+        return Task.Run(() =>
+        {            
+            _outputPath = Paths.TEMP_VIDEO_OUTPUT;
+            File.WriteAllBytes(_outputPath, _buffer);
+        });
+    }
+}

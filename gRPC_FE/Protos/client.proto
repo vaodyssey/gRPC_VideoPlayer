@@ -1,0 +1,16 @@
+syntax = "proto3";
+option csharp_namespace = "gRPC_FE";
+package protobuf; /*Must be the same as the package name in the server side protofile.*/
+
+service VideoStreamService {
+  rpc GetVideoBuffer (Request) returns (Response) {}
+}
+
+message Request {
+  int32 startTime_seconds = 1;
+  int32 duration_seconds = 2;
+}
+
+message Response {
+  bytes video_buffer = 1;
+}
