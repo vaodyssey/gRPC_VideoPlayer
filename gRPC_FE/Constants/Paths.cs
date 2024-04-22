@@ -3,6 +3,6 @@
     public class Paths
     {
         private static string _workingDirectory = Environment.CurrentDirectory;        
-        public static string TEMP_VIDEO_OUTPUT = $"{_workingDirectory}\\wwwroot\\TempVideo\\temp.mp4";
+        public static string TEMP_VIDEO_INPUT = $"{_workingDirectory}\\Videos\\demo.mp4";
     }
 }

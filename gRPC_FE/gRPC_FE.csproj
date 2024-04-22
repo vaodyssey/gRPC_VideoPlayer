@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Protos\videoExtractor.proto\**" />
+    <Content Remove="Protos\videoExtractor.proto\**" />
+    <EmbeddedResource Remove="Protos\videoExtractor.proto\**" />
+    <None Remove="Protos\videoExtractor.proto\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="wwwroot\temp.mp4" />
   </ItemGroup>
 
@@ -19,8 +26,10 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Protos\" />
+  </ItemGroup>
 	<ItemGroup>
-		<Protobuf Include="Protos\client.proto" GrpcServices="Client" />
+		<Protobuf Include="Protos\videoExtractor.proto" GrpcServices="Client" />
 	</ItemGroup>
-
 </Project>

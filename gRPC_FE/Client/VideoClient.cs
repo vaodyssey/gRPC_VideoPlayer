@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using gRPC_FE;
 using gRPC_FE.Requests;
 using gRPC_FE.Constants;
+using Google.Protobuf;
 
 namespace gRPC_FE.Client
 {
@@ -15,15 +16,16 @@ namespace gRPC_FE.Client
             var reply = await client.GetVideoBufferAsync(new Request()
             {
                 StartTimeSeconds = videoBufferRequest.StartTime,
-                DurationSeconds = videoBufferRequest.Duration
+                DurationSeconds = videoBufferRequest.Duration,
+                InputVideo = ByteString.CopyFrom( videoBufferRequest.VideoBytes),
             });
-            return reply.VideoBuffer.ToArray(); 
+            return reply.OutputVideo.ToArray();            
         }
         private GrpcChannel GetGrpcChannel()
         {
             return GrpcChannel.ForAddress("http://localhost:3333",new GrpcChannelOptions {
                 MaxReceiveMessageSize = gRPCStats.MAX_RECEIVE_MESSAGE_SIZE, 
-                MaxSendMessageSize = gRPCStats.MAX_SEND_MESSAGE_SIZE
+                MaxSendMessageSize = gRPCStats.MAX_SEND_MESSAGE_SIZE                             
             });
         }
     }

@@ -1,7 +1,7 @@
 syntax = "proto3";
-option go_package = "./protobuf";
+option go_package = "./videoExtractor";
 
-package protobuf;
+package videoExtractor;
 service VideoStreamService {
   rpc GetVideoBuffer (Request) returns (Response) {}
 }
@@ -9,8 +9,9 @@ service VideoStreamService {
 message Request {
   int32 startTime_seconds = 1;
   int32 duration_seconds = 2;
+  bytes input_video = 3;
 }
 
 message Response {
-  bytes video_buffer = 1;
+  bytes output_video = 1;
 }

@@ -1,23 +1,23 @@
 ﻿@page "/"
 @using gRPC_FE.Client
 @using gRPC_FE.Constants
-@using gRPC_FE.Components.Elements 
+@using gRPC_FE.Components.Elements
 @rendermode @(new InteractiveServerRenderMode(prerender:false))
-@inject IJSRuntime JS 
+@inject IJSRuntime JS
 
 <PageTitle>Home</PageTitle>
 @if (IsLoaded == true)
 {
     <div id="trailer" class="section d-flex justify-content-center embed-responsive embed-responsive-16by9">
-        <video @ref="@_videoPlayer" 
-               class="embed-responsive-item" 
-                src="@_base64Video"
-                type="@_mediaType"
+        <video @ref="@_videoPlayer"
+               class="embed-responsive-item"
+               src="@_base64Video"
+               type="@_mediaType"
                id="video-player"
-               controls autoplay>          
+               controls autoplay>
             Your browser does not support the video tag.
         </video>
-    </div>    
+    </div>
 }
 else
 {
@@ -38,6 +38,7 @@ else
     private bool _isNextBufferLoadTriggered = false;
     private ElementReference _videoPlayer;
     private byte[] _buffer;
+    private byte[] _inputVideoBytes;
     private string _base64Video = "";
     private bool IsLoaded { get; set; } = false;
     private string _mediaType => "video/mp4";
@@ -46,6 +47,7 @@ else
 
     protected override async void OnInitialized()
     {
+        await LoadVideoAsByteArray();
         await InitializeFirstVideoChunk();
         await ConvertByteArrayToMP4();
         await InvokeAsync(() =>
@@ -55,12 +57,20 @@ else
         });
     }
 
+    private Task LoadVideoAsByteArray()
+    {
+        return Task.Run(() =>
+        {
+            _inputVideoBytes = File.ReadAllBytes(Paths.TEMP_VIDEO_INPUT);
+        });
+    }
     private async Task InitializeFirstVideoChunk()
     {
         _buffer = await _videoClient.GetVideoBuffer(new Requests.VideoBufferRequest()
         {
-            StartTime = 60,
-            Duration = VideoInfo.CHUNK_DURATION_IN_SECONDS
+            StartTime = 100,
+            Duration = 120,
+            VideoBytes = _inputVideoBytes
         });
     }
     private Task ConvertByteArrayToMP4()
@@ -71,52 +81,4 @@ else
         });
     }
     
-    /// <summary>
-    /// TODO: Add video buffering (e.g. loads the next 15-second video chunk after the first chunk finishes.
-    /// </summary>
-    //private async void OnVideoTimeChanged()
-    //{
-    //    var currentTime = await JS.InvokeAsync<double>("getVideoCurrentTime");
-    //    var currentTimeSpan = TimeSpan.FromSeconds(currentTime);
-    //    System.Diagnostics.Debug.WriteLine("C# - Current time span: " + currentTimeSpan);
-
-    //    //Check if the current playback time has passed the end time of the last loaded chunk
-    //    if (currentTimeSpan >= _lastChunkEndTime && !_isNextBufferLoadTriggered)
-    //    {
-    //        // Load the next video chunk
-    //        _isNextBufferLoadTriggered = true;
-    //        await GetNextVideoChunk();
-    //        await InvokeAsync(() =>
-    //        {
-    //            IsLoaded = false; 
-    //            IsLoaded = true; 
-    //            StateHasChanged();
-    //        });
-    //    }
-    //}
-    //private async Task GetNextVideoChunk()
-    //{
-    //    TimeSpan nextChunkStartTime = _lastChunkEndTime;
-    //    TimeSpan nextChunkEndTime = nextChunkStartTime + _chunkDuration;
-    //    int startTimeInt = (int)nextChunkStartTime.TotalSeconds;
-    //    var nextChunkData = await _videoClient.GetVideoBuffer(new Requests.VideoBufferRequest()
-    //    {
-    //        StartTime = startTimeInt+ VideoInfo.CHUNK_DURATION_IN_SECONDS,
-    //        Duration = VideoInfo.CHUNK_DURATION_IN_SECONDS
-    //    });
-    //    // Append the next chunk to the existing video source
-    //    await AppendVideoChunk(nextChunkData);
-
-    //    // Update the end time of the last loaded chunk
-    //    _lastChunkEndTime = nextChunkEndTime;
-    //    _isNextBufferLoadTriggered = false;
-    //}
-    //private Task AppendVideoChunk(byte[] chunkData)
-    //{
-    //    return Task.Run(() =>
-    //    {
-    //        string base64Chunk = Convert.ToBase64String(chunkData);
-    //        _base64Video += base64Chunk;
-    //    });
-    //}
 }

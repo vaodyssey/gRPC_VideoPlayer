@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package subGenProto;
+option go_package = "./subGenProto";
+service SubtitleGenerator{
+ rpc Generate (InputVideo) returns (OutputVideo);
+
+}
+
+message InputVideo{
+ bytes video = 1;
+}
+
+message OutputVideo{
+ bytes video = 1;
+}

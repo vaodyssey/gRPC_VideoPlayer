@@ -2,7 +2,7 @@ package server
 
 import (
 	"context"
-	pb "gRPC_BE/protobuf"
+	pb "gRPC_BE/videoExtractor"
 	"log"
 	"net"
 
@@ -22,7 +22,7 @@ type videoStreamServiceServer struct {
 }
 
 func (s *videoStreamServiceServer) GetVideoBuffer(ctx context.Context, request *pb.Request) (*pb.Response, error) {
-	return &pb.Response{VideoBuffer: []byte("ahihi")}, nil
+	return &pb.Response{OutputVideo: []byte("ahihi")}, nil
 
 }
 
