@@ -1,13 +1,16 @@
 import time
 import math
 import ffmpeg
-
+import os
 from faster_whisper import WhisperModel
 
-input_video = "input.mp4"
+tempPath = f'{os.getcwd()}/SubGen'
+subgenPath = tempPath.replace(os.sep, '/')
+
+input_video = f"{subgenPath}/input.mp4"
 input_video_name = input_video.replace(".mp4", "")
 def extract_audio():
-    extracted_audio = f"audio-{input_video_name}.wav"
+    extracted_audio = f"{subgenPath}/extracted-audio.wav"
     stream = ffmpeg.input(input_video)
     stream = ffmpeg.output(stream, extracted_audio)
     ffmpeg.run(stream, overwrite_output=True)
@@ -36,8 +39,7 @@ def format_time(seconds):
 
     return formatted_time
 def generate_subtitle_file(language, segments):
-
-    subtitle_file = f"{input_video_name}.{language}.srt"
+    subtitle_file = f"{subgenPath}/subtitle.{language}.srt"
     text = ""
     for index, segment in enumerate(segments):
         segment_start = format_time(segment.start)
@@ -52,11 +54,11 @@ def generate_subtitle_file(language, segments):
     f.close()
 
     return subtitle_file
-def add_subtitle_to_video(soft_subtitle, subtitle_file,  subtitle_language):
+def add_subtitle_to_video(soft_subtitle, subtitle_file:str,  subtitle_language):
 
     video_input_stream = ffmpeg.input(input_video)
     subtitle_input_stream = ffmpeg.input(subtitle_file)
-    output_video = f"output-{input_video_name}.mp4"
+    output_video = f"{subgenPath}/output.mp4"
     subtitle_track_title = subtitle_file.replace(".srt", "")
 
     if soft_subtitle:
@@ -67,9 +69,10 @@ def add_subtitle_to_video(soft_subtitle, subtitle_file,  subtitle_language):
         )
         ffmpeg.run(stream, overwrite_output=True)
     else:
+        parsedSubFilePath = subtitle_file.replace('E:/',"E\:/")
         stream = ffmpeg.output(video_input_stream, output_video,
 
-                               vf=f"subtitles={subtitle_file}")
+                               vf=f"subtitles='{parsedSubFilePath}'")
 
         ffmpeg.run(stream, overwrite_output=True)
 
@@ -83,4 +86,4 @@ def run():
         subtitle_file=subtitle_file,
         subtitle_language=language
     )
-run()
+
