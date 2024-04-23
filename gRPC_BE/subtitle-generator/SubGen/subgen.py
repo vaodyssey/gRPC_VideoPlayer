@@ -69,21 +69,25 @@ def add_subtitle_to_video(soft_subtitle, subtitle_file:str,  subtitle_language):
         )
         ffmpeg.run(stream, overwrite_output=True)
     else:
-        parsedSubFilePath = subtitle_file.replace('E:/',"E\:/")
+        parsedSubFilePath = parseSubtitleFilePath(subtitle_file)
         stream = ffmpeg.output(video_input_stream, output_video,
 
                                vf=f"subtitles='{parsedSubFilePath}'")
 
         ffmpeg.run(stream, overwrite_output=True)
+def parseSubtitleFilePath(path):
+    drive, rest_of_path = os.path.splitdrive(path)        
+    replaced_drive = drive.replace(':', '\:')            
+    replaced_path = replaced_drive + rest_of_path    
+    return replaced_path
 
 def run():
-
     extracted_audio = extract_audio()
     language, segments = transcribe(audio=extracted_audio)
     subtitle_file = generate_subtitle_file(language=language,segments=segments)
     add_subtitle_to_video(
         soft_subtitle=False,
         subtitle_file=subtitle_file,
-        subtitle_language=language
+        subtitle_language=language       
     )
 
